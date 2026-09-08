@@ -1,0 +1,12 @@
+{
+  "storyId": "story-001",
+  "storyTitle": "Следы",
+  "number": 0,
+  "id": "bad-episode",
+  "title": "bad-episode",
+  "description": "",
+  "images": [
+    "content/stories/story-001/episodes/bad-episode/images/001.jpg"
+  ],
+  "imageCount": 1
+}

@@ -1,0 +1,13 @@
+{
+  "storyId": "story-001",
+  "storyTitle": "Следы",
+  "number": 2,
+  "id": "002 - Испытание",
+  "title": "Испытание",
+  "description": "Герои проходят первое испытание.",
+  "images": [
+    "content/stories/story-001/episodes/002 - Испытание/images/001.jpg",
+    "content/stories/story-001/episodes/002 - Испытание/images/002.jpg"
+  ],
+  "imageCount": 2
+}

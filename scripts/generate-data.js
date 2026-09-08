@@ -21,18 +21,19 @@ function getNumericPrefix(name) {
     return match ? parseInt(match[1], 10) : 0;
 }
 
-function findCover(episodesDir) {
+function findCoverInDir(dirPath, relativeBase) {
     const extensions = ['.jpg', '.jpeg', '.png'];
     for (const ext of extensions) {
-        const coverPath = path.join(episodesDir, `cover${ext}`);
+        const coverPath = path.join(dirPath, `cover${ext}`);
         if (fs.existsSync(coverPath)) {
-            return `cover${ext}`;
+            // Return relative path from workspace root for web access
+            return path.relative(path.join(__dirname, '..'), coverPath).replace(/\\/g, '/');
         }
     }
     return null;
 }
 
-function getImages(imagesDir) {
+function getImages(imagesDir, basePath) {
     if (!fs.existsSync(imagesDir)) {
         return [];
     }
@@ -51,7 +52,8 @@ function getImages(imagesDir) {
             return numA - numB;
         });
     
-    return images;
+    // Return full relative paths
+    return images.map(img => path.join(basePath, 'images', img).replace(/\\/g, '/'));
 }
 
 function scanStories() {
@@ -71,6 +73,7 @@ function scanStories() {
     
     for (const storyDir of storyDirs) {
         const storyPath = path.join(storiesDir, storyDir);
+        const storyId = storyDir;
         const title = readTextFile(path.join(storyPath, 'title.txt')) || storyDir;
         const description = readTextFile(path.join(storyPath, 'description.txt')) || '';
         
@@ -96,24 +99,27 @@ function scanStories() {
             const episodeDescription = readTextFile(path.join(episodePath, 'description.txt')) || '';
             
             const imagesDir = path.join(episodePath, 'images');
-            const images = getImages(imagesDir);
+            const basePath = `content/stories/${storyId}/episodes/${episodeDir}`;
+            const images = getImages(imagesDir, basePath);
             
             if (images.length === 0) {
                 console.warn(`Episode "${episodeDir}" has no images`);
                 continue;
             }
             
-            // Build relative paths for web access
-            const storyId = storyDir;
-            const episodeId = episodeDir;
-            const basePath = `content/stories/${storyId}/episodes/${episodeId}`;
+            // Find cover: first check for cover.jpg in episode folder, then use first image
+            let cover = findCoverInDir(episodePath);
+            if (!cover && images.length > 0) {
+                cover = images[0];
+            }
             
             episodes.push({
                 number: episodeNumber,
                 id: episodeDir,
                 title: episodeTitle,
                 description: episodeDescription,
-                images: images.map(img => `${basePath}/images/${img}`),
+                cover: cover,
+                images: images,
                 imageCount: images.length
             });
         }
@@ -121,11 +127,18 @@ function scanStories() {
         // Sort episodes by number
         episodes.sort((a, b) => a.number - b.number);
         
+        // Find cover for story: check for cover.jpg in story folder
+        let storyCover = findCoverInDir(storyPath);
+        if (!storyCover && episodes.length > 0 && episodes[0].cover) {
+            storyCover = episodes[0].cover;
+        }
+        
         if (episodes.length > 0) {
             stories.push({
                 id: storyDir,
                 title: title,
                 description: description,
+                cover: storyCover,
                 episodes: episodes,
                 episodeCount: episodes.length
             });
