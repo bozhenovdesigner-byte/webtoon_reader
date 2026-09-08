@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><a href="../index.html">Webtoon Platform</a></h1>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div id="app">
+                <h2>Загрузка...</h2>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        async function loadStory() {
+            const storyId = App.getQueryParam('id');
+            
+            if (!storyId) {
+                App.renderError('Не указан ID сюжета');
+                return;
+            }
+
+            const story = await App.loadData(`../generated/${storyId}.json`);
+            
+            if (!story) {
+                App.renderError('Сюжет не найден');
+                return;
+            }
+
+            // Save last story
+            Storage.setLastStory(story.id);
+
+            let html = `
+                <div class="page-header">
+                    <h2 class="page-title">${story.title}</h2>
+                    <p class="page-description">${story.description || 'Нет описания'}</p>
+                </div>
+                
+                <h3 style="padding: 16px;">Эпизоды (${story.episodes.length})</h3>
+                
+                <ul class="episode-list">
+            `;
+
+            for (const episode of story.episodes) {
+                const episodeKey = `${story.id}_${episode.id}`;
+                html += `
+                    <li class="episode-item">
+                        <div>
+                            <span class="episode-number">Эпизод ${episode.number}</span>
+                            <div class="episode-item-title">${episode.title}</div>
+                        </div>
+                        <a href="episode.html?story=${story.id}&episode=${encodeURIComponent(episode.id)}" class="btn">
+                            Читать
+                        </a>
+                    </li>
+                `;
+            }
+
+            html += '</ul>';
+            document.getElementById('app').innerHTML = html;
+        }
+
+        loadStory();
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "webtoon-platform",
+  "version": "1.0.0",
+  "description": "Static webtoon publishing platform",
+  "main": "scripts/generate-data.js",
+  "scripts": {
+    "build": "node scripts/generate-data.js",
+    "serve": "npx http-server -p 8080"
+  },
+  "keywords": [
+    "webtoon",
+    "static",
+    "github-pages"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Episode Reader</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+    <div class="reader-container">
+        <header class="reader-header">
+            <div>
+                <a href="#" id="backLink" style="color:white;">← Назад</a>
+                <h3 id="episodeTitle" style="margin-top:4px;"></h3>
+            </div>
+            <nav class="reader-nav">
+                <button id="prevBtn" class="btn btn-secondary">← Пред.</button>
+                <button id="nextBtn" class="btn">След. →</button>
+            </nav>
+        </header>
+
+        <main class="reader-content" id="readerContent">
+            <p style="color:white;text-align:center;">Загрузка...</p>
+        </main>
+
+        <footer class="reader-footer">
+            <h3 id="footerEpisodeTitle"></h3>
+            <div class="nav-buttons">
+                <button id="prevBtnFooter" class="btn btn-secondary">← Предыдущий эпизод</button>
+                <a href="story.html" id="storyLink" class="btn btn-secondary">К сюжету</a>
+                <button id="nextBtnFooter" class="btn">Следующий эпизод →</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        let currentStory = null;
+        let currentEpisode = null;
+        let episodeIndex = 0;
+
+        function setupNavigation() {
+            const storyId = App.getQueryParam('story');
+            const episodeId = App.getQueryParam('episode');
+            
+            document.getElementById('backLink').href = `story.html?id=${storyId}`;
+            document.getElementById('storyLink').href = `story.html?id=${storyId}`;
+
+            if (currentStory && currentStory.episodes) {
+                const prevEpisode = currentStory.episodes[episodeIndex - 1];
+                const nextEpisode = currentStory.episodes[episodeIndex + 1];
+
+                const prevBtns = [document.getElementById('prevBtn'), document.getElementById('prevBtnFooter')];
+                const nextBtns = [document.getElementById('nextBtn'), document.getElementById('nextBtnFooter')];
+
+                prevBtns.forEach(btn => {
+                    if (btn) {
+                        if (prevEpisode) {
+                            btn.style.display = 'inline-block';
+                            btn.onclick = () => {
+                                window.location.href = `episode.html?story=${storyId}&episode=${encodeURIComponent(prevEpisode.id)}`;
+                            };
+                        } else {
+                            btn.style.display = 'none';
+                        }
+                    }
+                });
+
+                nextBtns.forEach(btn => {
+                    if (btn) {
+                        if (nextEpisode) {
+                            btn.style.display = 'inline-block';
+                            btn.onclick = () => {
+                                window.location.href = `episode.html?story=${storyId}&episode=${encodeURIComponent(nextEpisode.id)}`;
+                            };
+                        } else {
+                            btn.style.display = 'none';
+                        }
+                    }
+                });
+            }
+        }
+
+        async function loadEpisode() {
+            const storyId = App.getQueryParam('story');
+            const episodeId = App.getQueryParam('episode');
+            
+            if (!storyId || !episodeId) {
+                document.getElementById('readerContent').innerHTML = '<p style="color:white;text-align:center;">Ошибка: не указан сюжет или эпизод</p>';
+                return;
+            }
+
+            const story = await App.loadData(`../generated/${storyId}.json`);
+            
+            if (!story) {
+                document.getElementById('readerContent').innerHTML = '<p style="color:white;text-align:center;">Сюжет не найден</p>';
+                return;
+            }
+
+            currentStory = story;
+            episodeIndex = story.episodes.findIndex(ep => ep.id === episodeId);
+            
+            if (episodeIndex === -1) {
+                document.getElementById('readerContent').innerHTML = '<p style="color:white;text-align:center;">Эпизод не найден</p>';
+                return;
+            }
+
+            currentEpisode = story.episodes[episodeIndex];
+            
+            // Save reading progress
+            Storage.setLastEpisode(storyId, episodeId);
+            Storage.setReadingPosition(`${storyId}_${episodeId}`, 0);
+
+            // Update UI
+            document.getElementById('episodeTitle').textContent = currentEpisode.title;
+            document.getElementById('footerEpisodeTitle').textContent = currentEpisode.title;
+
+            // Render images
+            let html = '';
+            for (const imgSrc of currentEpisode.images) {
+                html += `<img src="../${imgSrc}" alt="" class="reader-image" loading="lazy">`;
+            }
+            document.getElementById('readerContent').innerHTML = html;
+
+            setupNavigation();
+        }
+
+        loadEpisode();
+    </script>
+</body>
+</html>
