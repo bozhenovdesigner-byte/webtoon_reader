@@ -1,0 +1,14 @@
+{
+  "storyId": "story-001",
+  "storyTitle": "Следы",
+  "number": 1,
+  "id": "001 - Встреча",
+  "title": "Встреча",
+  "description": "Первая встреча героев.",
+  "images": [
+    "content/stories/story-001/episodes/001 - Встреча/images/001.jpg",
+    "content/stories/story-001/episodes/001 - Встреча/images/002.jpg",
+    "content/stories/story-001/episodes/001 - Встреча/images/003.jpg"
+  ],
+  "imageCount": 3
+}

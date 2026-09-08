@@ -1,0 +1,20 @@
+{
+  "id": "story-001",
+  "title": "Следы",
+  "description": "Герои находят странный след в лесу.",
+  "episodes": [
+    {
+      "number": 1,
+      "id": "001 - Встреча",
+      "title": "Встреча",
+      "description": "Первая встреча героев.",
+      "images": [
+        "content/stories/story-001/episodes/001 - Встреча/images/001.jpg",
+        "content/stories/story-001/episodes/001 - Встреча/images/002.jpg",
+        "content/stories/story-001/episodes/001 - Встреча/images/003.jpg"
+      ],
+      "imageCount": 3
+    }
+  ],
+  "episodeCount": 1
+}
