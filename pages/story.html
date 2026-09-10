@@ -45,6 +45,7 @@
 
             let html = `
                 <div class="page-header">
+                    ${story.cover ? `<img src="../${story.cover}" alt="${story.title}" style="width:100%;max-width:400px;height:250px;object-fit:cover;border-radius:12px;margin-bottom:16px;">` : ''}
                     <h2 class="page-title">${story.title}</h2>
                     <p class="page-description">${story.description || 'Нет описания'}</p>
                 </div>

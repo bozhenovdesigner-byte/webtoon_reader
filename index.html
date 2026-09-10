@@ -47,6 +47,7 @@
                         ${isLastRead ? '<div style="background:#3498db;color:white;padding:4px 8px;font-size:12px;">Продолжить чтение</div>' : ''}
                         <a href="pages/story.html?id=${story.id}">
                             <div class="story-card-content">
+                                ${story.cover ? `<img src="${story.cover}" alt="${story.title}" class="story-card-cover" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:12px;">` : ''}
                                 <h3 class="story-card-title">${story.title}</h3>
                                 <p class="story-card-description">${story.description || 'Нет описания'}</p>
                                 <p style="color:#666;font-size:14px;">Эпизодов: ${story.episodeCount}</p>
