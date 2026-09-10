@@ -30,26 +30,34 @@
             if (!story) return App.renderError('Сюжет не найден');
             Storage.setLastStory(story.id);
 
+            const lastEpisodeId = Storage.getLastEpisode(story.id);
+            const lastEpisode = story.episodes.find(ep => ep.id === lastEpisodeId);
+            const continueEpisode = lastEpisode || story.episodes[0];
+            const continueLabel = lastEpisode ? 'Продолжить чтение' : 'Начать чтение';
+
             let html = `
                 <section class="story-hero">
                     <div class="story-hero-cover">${story.cover ? `<img src="../${story.cover}" alt="Обложка: ${story.title}">` : '<div class="cover-placeholder"></div>'}</div>
                     <div class="story-hero-info">
-                        <div class="eyebrow">${story.episodeCount} ${story.episodeCount === 1 ? 'эпизод' : 'эпизодов'}</div>
+                        <div class="eyebrow">История · ${story.episodeCount} ${story.episodeCount === 1 ? 'эпизод' : 'эпизодов'}</div>
                         <h1 class="page-title">${story.title}</h1>
                         <p class="page-description">${story.description || 'Без описания'}</p>
+                        ${continueEpisode ? `<div class="story-hero-meta"><a class="btn" href="episode.html?story=${encodeURIComponent(story.id)}&episode=${encodeURIComponent(continueEpisode.id)}">${continueLabel}</a><span class="meta-text">${lastEpisode ? `Эпизод ${String(continueEpisode.number).padStart(2, '0')}` : `Эпизод ${String(continueEpisode.number).padStart(2, '0')}`}</span></div>` : ''}
                     </div>
                 </section>
-                <div class="section-heading episodes-heading"><span>Продолжение истории</span><h2>Эпизоды</h2></div>
-                <div class="episode-list">`;
+                <section class="episodes-section">
+                    <div class="section-heading episodes-heading"><span>История по порядку</span><h2>Эпизоды</h2></div>
+                    <div class="episode-list">`;
 
             for (const episode of story.episodes) {
+                const isLastRead = episode.id === lastEpisodeId;
                 html += `
-                    <article class="episode-item">
+                    <article class="episode-item${isLastRead ? ' episode-item-current' : ''}">
                         <a class="episode-cover-link" href="episode.html?story=${encodeURIComponent(story.id)}&episode=${encodeURIComponent(episode.id)}">
                             <img class="episode-cover" src="../${episode.cover}" alt="">
                         </a>
                         <div class="episode-info">
-                            <span class="episode-number">Эпизод ${String(episode.number).padStart(2, '0')}</span>
+                            <span class="episode-number">Эпизод ${String(episode.number).padStart(2, '0')}${isLastRead ? ' · Вы читали' : ''}</span>
                             <h3 class="episode-item-title">${episode.title}</h3>
                             ${episode.description ? `<p class="episode-description">${episode.description}</p>` : ''}
                         </div>
@@ -57,7 +65,7 @@
                     </article>`;
             }
 
-            html += '</div>';
+            html += '</div></section>';
             document.getElementById('app').innerHTML = html;
         }
         loadStory();
