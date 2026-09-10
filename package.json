@@ -1,17 +1,15 @@
 {
   "name": "webtoon-platform",
-  "version": "1.0.0",
-  "description": "Static webtoon publishing platform",
+  "version": "1.1.0",
+  "description": "Static mobile-first webtoon publishing platform",
   "main": "scripts/generate-data.js",
   "scripts": {
-    "build": "node scripts/generate-data.js",
+    "build": "node scripts/build.js",
+    "generate": "node scripts/generate-data.js",
+    "validate": "node scripts/validate-content.js",
     "serve": "npx http-server -p 8080"
   },
-  "keywords": [
-    "webtoon",
-    "static",
-    "github-pages"
-  ],
+  "keywords": ["webtoon", "static", "github-pages"],
   "author": "",
   "license": "MIT",
   "devDependencies": {
