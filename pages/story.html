@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story</title>
+    <title>История</title>
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/layout.css">
 </head>
 <body>
     <header class="header">
-        <div class="container">
-            <h1><a href="../index.html">Webtoon Platform</a></h1>
+        <div class="container header-inner">
+            <a class="brand" href="../index.html">WEBTOON</a>
+            <a class="header-back" href="../index.html">Все истории</a>
         </div>
     </header>
 
     <main class="main">
-        <div class="container">
-            <div id="app">
-                <h2>Загрузка...</h2>
-            </div>
-        </div>
+        <div class="container" id="app"><div class="loading">Загрузка…</div></div>
     </main>
 
     <script src="../js/storage.js"></script>
@@ -27,52 +24,42 @@
     <script>
         async function loadStory() {
             const storyId = App.getQueryParam('id');
-            
-            if (!storyId) {
-                App.renderError('Не указан ID сюжета');
-                return;
-            }
+            if (!storyId) return App.renderError('Не указан ID сюжета');
 
             const story = await App.loadData(`../generated/${storyId}.json`);
-            
-            if (!story) {
-                App.renderError('Сюжет не найден');
-                return;
-            }
-
-            // Save last story
+            if (!story) return App.renderError('Сюжет не найден');
             Storage.setLastStory(story.id);
 
             let html = `
-                <div class="page-header">
-                    <h2 class="page-title">${story.title}</h2>
-                    <p class="page-description">${story.description || 'Нет описания'}</p>
-                </div>
-                
-                <h3 style="padding: 16px;">Эпизоды (${story.episodes.length})</h3>
-                
-                <ul class="episode-list">
-            `;
+                <section class="story-hero">
+                    <div class="story-hero-cover">${story.cover ? `<img src="../${story.cover}" alt="Обложка: ${story.title}">` : '<div class="cover-placeholder"></div>'}</div>
+                    <div class="story-hero-info">
+                        <div class="eyebrow">${story.episodeCount} ${story.episodeCount === 1 ? 'эпизод' : 'эпизодов'}</div>
+                        <h1 class="page-title">${story.title}</h1>
+                        <p class="page-description">${story.description || 'Без описания'}</p>
+                    </div>
+                </section>
+                <div class="section-heading episodes-heading"><span>Продолжение истории</span><h2>Эпизоды</h2></div>
+                <div class="episode-list">`;
 
             for (const episode of story.episodes) {
-                const episodeKey = `${story.id}_${episode.id}`;
                 html += `
-                    <li class="episode-item">
-                        <div>
-                            <span class="episode-number">Эпизод ${episode.number}</span>
-                            <div class="episode-item-title">${episode.title}</div>
-                        </div>
-                        <a href="episode.html?story=${story.id}&episode=${encodeURIComponent(episode.id)}" class="btn">
-                            Читать
+                    <article class="episode-item">
+                        <a class="episode-cover-link" href="episode.html?story=${encodeURIComponent(story.id)}&episode=${encodeURIComponent(episode.id)}">
+                            <img class="episode-cover" src="../${episode.cover}" alt="">
                         </a>
-                    </li>
-                `;
+                        <div class="episode-info">
+                            <span class="episode-number">Эпизод ${String(episode.number).padStart(2, '0')}</span>
+                            <h3 class="episode-item-title">${episode.title}</h3>
+                            ${episode.description ? `<p class="episode-description">${episode.description}</p>` : ''}
+                        </div>
+                        <a href="episode.html?story=${encodeURIComponent(story.id)}&episode=${encodeURIComponent(episode.id)}" class="btn">Читать</a>
+                    </article>`;
             }
 
-            html += '</ul>';
+            html += '</div>';
             document.getElementById('app').innerHTML = html;
         }
-
         loadStory();
     </script>
 </body>
