@@ -10,11 +10,14 @@
 <body>
     <div class="reader-container">
         <header class="reader-header">
-            <a href="#" id="backLink" class="reader-brand">← Назад</a>
+            <div class="reader-links">
+                <a href="../index.html" class="reader-brand">WEBTOON</a>
+                <a href="#" id="backLink" class="reader-story-link">← История</a>
+            </div>
             <div class="reader-title" id="episodeTitle"></div>
-            <nav class="reader-nav">
-                <button id="prevBtn" class="reader-btn">←</button>
-                <button id="nextBtn" class="reader-btn">→</button>
+            <nav class="reader-nav" aria-label="Навигация по эпизодам">
+                <button id="prevBtn" class="reader-btn" aria-label="Предыдущий эпизод">←</button>
+                <button id="nextBtn" class="reader-btn" aria-label="Следующий эпизод">→</button>
             </nav>
         </header>
 
@@ -24,7 +27,7 @@
             <div class="reader-footer-title" id="footerEpisodeTitle"></div>
             <div class="nav-buttons">
                 <button id="prevBtnFooter" class="btn btn-secondary">← Предыдущий</button>
-                <a href="#" id="storyLink" class="btn btn-secondary">К сюжету</a>
+                <a href="#" id="storyLink" class="btn btn-secondary">К истории</a>
                 <button id="nextBtnFooter" class="btn">Следующий →</button>
             </div>
         </footer>
@@ -39,8 +42,10 @@
 
         function setupNavigation() {
             const storyId = App.getQueryParam('story');
-            document.getElementById('backLink').href = `story.html?id=${encodeURIComponent(storyId)}`;
-            document.getElementById('storyLink').href = `story.html?id=${encodeURIComponent(storyId)}`;
+            const storyUrl = `story.html?id=${encodeURIComponent(storyId)}`;
+            document.getElementById('backLink').href = storyUrl;
+            document.getElementById('storyLink').href = storyUrl;
+            document.getElementById('backLink').textContent = `← ${currentStory.title}`;
 
             const prevEpisode = currentStory.episodes[episodeIndex - 1];
             const nextEpisode = currentStory.episodes[episodeIndex + 1];
