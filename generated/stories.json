@@ -3,6 +3,7 @@
     "id": "story-001",
     "title": "Следы",
     "description": "Герои находят странный след в лесу.",
+    "cover": "content/stories/story-001/episodes/001 - Встреча/cover.jpg",
     "episodeCount": 1
   }
 ]
