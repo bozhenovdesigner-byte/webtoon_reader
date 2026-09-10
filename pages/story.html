@@ -56,11 +56,16 @@
 
             for (const episode of story.episodes) {
                 const episodeKey = `${story.id}_${episode.id}`;
+                const coverUrl = episode.cover || (episode.images && episode.images.length > 0 ? episode.images[0] : '');
                 html += `
                     <li class="episode-item">
-                        <div>
+                        <div class="episode-cover-wrapper">
+                            ${coverUrl ? `<img src="../${coverUrl}" alt="${episode.title}" class="episode-cover" loading="lazy">` : '<div class="episode-cover-placeholder"></div>'}
+                        </div>
+                        <div class="episode-info">
                             <span class="episode-number">Эпизод ${episode.number}</span>
                             <div class="episode-item-title">${episode.title}</div>
+                            ${episode.description ? `<p class="episode-description">${episode.description}</p>` : ''}
                         </div>
                         <a href="episode.html?story=${story.id}&episode=${encodeURIComponent(episode.id)}" class="btn">
                             Читать
