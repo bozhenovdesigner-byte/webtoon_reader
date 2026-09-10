@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webtoon Platform</title>
+    <title>Следы — вебтун</title>
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
     <header class="header">
-        <div class="container">
-            <h1><a href="index.html">Webtoon Platform</a></h1>
+        <div class="container header-inner">
+            <a class="brand" href="index.html">WEBTOON</a>
+            <span class="header-subtitle">Истории</span>
         </div>
     </header>
 
     <main class="main">
         <div class="container">
-            <div id="app">
-                <h2>Загрузка...</h2>
-            </div>
+            <div id="app"><div class="loading">Загрузка…</div></div>
         </div>
     </main>
 
@@ -27,39 +26,36 @@
     <script>
         async function loadStories() {
             const stories = await App.loadData('generated/stories.json');
-            
+            const app = document.getElementById('app');
+
             if (!stories || stories.length === 0) {
-                document.getElementById('app').innerHTML = `
-                    <h2>Нет доступных сюжетов</h2>
-                    <p>Добавьте контент в папку content/stories/</p>
-                `;
+                app.innerHTML = '<div class="empty"><h2>Пока нет историй</h2><p>Добавьте контент в папку content/stories/.</p></div>';
                 return;
             }
 
-            let html = '<div class="story-grid">';
-            
+            let html = '<section class="catalog"><div class="section-heading"><span>Коллекция</span><h1>Истории</h1></div><div class="story-grid">';
+
             for (const story of stories) {
                 const lastEpisode = Storage.getLastEpisode();
                 const isLastRead = lastEpisode && lastEpisode.storyId === story.id;
-                
                 html += `
-                    <div class="story-card">
-                        ${isLastRead ? '<div style="background:#3498db;color:white;padding:4px 8px;font-size:12px;">Продолжить чтение</div>' : ''}
-                        <a href="pages/story.html?id=${story.id}">
+                    <article class="story-card">
+                        <a href="pages/story.html?id=${encodeURIComponent(story.id)}">
+                            <div class="story-card-cover-wrap">
+                                ${story.cover ? `<img src="${story.cover}" alt="Обложка: ${story.title}" class="story-card-cover">` : '<div class="cover-placeholder"></div>'}
+                                ${isLastRead ? '<span class="continue-badge">Продолжить</span>' : ''}
+                            </div>
                             <div class="story-card-content">
-                                <h3 class="story-card-title">${story.title}</h3>
-                                <p class="story-card-description">${story.description || 'Нет описания'}</p>
-                                <p style="color:#666;font-size:14px;">Эпизодов: ${story.episodeCount}</p>
+                                <div class="eyebrow">${story.episodeCount} ${story.episodeCount === 1 ? 'эпизод' : 'эпизодов'}</div>
+                                <h2 class="story-card-title">${story.title}</h2>
+                                <p class="story-card-description">${story.description || 'Без описания'}</p>
                             </div>
                         </a>
-                    </div>
-                `;
+                    </article>`;
             }
-            
-            html += '</div>';
-            document.getElementById('app').innerHTML = html;
+            html += '</div></section>';
+            app.innerHTML = html;
         }
-
         loadStories();
     </script>
 </body>
