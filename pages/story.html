@@ -30,7 +30,8 @@
             if (!story) return App.renderError('Сюжет не найден');
             Storage.setLastStory(story.id);
 
-            const lastEpisodeId = Storage.getLastEpisode(story.id);
+            const progress = Storage.getLastEpisode();
+            const lastEpisodeId = progress && progress.storyId === story.id ? progress.episodeId : null;
             const lastEpisode = story.episodes.find(ep => ep.id === lastEpisodeId);
             const continueEpisode = lastEpisode || story.episodes[0];
             const continueLabel = lastEpisode ? 'Продолжить чтение' : 'Начать чтение';
@@ -42,7 +43,7 @@
                         <div class="eyebrow">История · ${story.episodeCount} ${story.episodeCount === 1 ? 'эпизод' : 'эпизодов'}</div>
                         <h1 class="page-title">${story.title}</h1>
                         <p class="page-description">${story.description || 'Без описания'}</p>
-                        ${continueEpisode ? `<div class="story-hero-meta"><a class="btn" href="episode.html?story=${encodeURIComponent(story.id)}&episode=${encodeURIComponent(continueEpisode.id)}">${continueLabel}</a><span class="meta-text">${lastEpisode ? `Эпизод ${String(continueEpisode.number).padStart(2, '0')}` : `Эпизод ${String(continueEpisode.number).padStart(2, '0')}`}</span></div>` : ''}
+                        ${continueEpisode ? `<div class="story-hero-meta"><a class="btn" href="episode.html?story=${encodeURIComponent(story.id)}&episode=${encodeURIComponent(continueEpisode.id)}">${continueLabel}</a><span class="meta-text">Эпизод ${String(continueEpisode.number).padStart(2, '0')}</span></div>` : ''}
                     </div>
                 </section>
                 <section class="episodes-section">
